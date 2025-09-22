@@ -11,7 +11,7 @@ SSUMC 9기 Android 스터디 A조
 ```bash
 ├─main
     ├─cherry/main
-    │  └─Ean/#1
+    │  └─cherry/#1
 ```
 1. `닉네임/main 브랜치`가 기본 브랜치로 pr 보낼 때 main 브랜치가 아닌 닉네임/main 브랜치로 올립니다.
 2. 매주 실습, 미션은 각자의 닉네임/main 브랜치를 base 브랜치로 삼아 `닉네임/이슈번호 브랜치`를 생성하여 관련 파일을 업로드합니다.
