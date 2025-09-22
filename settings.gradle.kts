@@ -19,6 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "UMC_8th"
+rootProject.name = "My Application"
 include(":app")
- 
