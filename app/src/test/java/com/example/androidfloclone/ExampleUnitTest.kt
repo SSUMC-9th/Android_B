@@ -1,4 +1,4 @@
-package com.example.umc_9th
+package com.example.androidfloclone
 
 import org.junit.Test
 
