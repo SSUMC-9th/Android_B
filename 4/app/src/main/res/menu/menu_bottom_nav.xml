@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/fragment_home"
+        android:title="홈"
+        android:icon="@drawable/ic_bottom_home_no_select_resized"/>
+    <item
+        android:id="@+id/fragment_search"
+        android:title="검색"
+        android:icon="@drawable/ic_bottom_search_no_select_resized"/>
+    <item
+        android:id="@+id/fragment_favorite"
+        android:title="즐겨찾기" 
+        android:icon="@drawable/ic_bottom_look_no_select_resized"/> 
+        
+    <item
+        android:id="@+id/fragment_settings"
+        android:title="설정" 
+        android:icon="@drawable/ic_bottom_locker_no_select_resized"/> 
+        
+</menu>
