@@ -136,11 +136,11 @@ plugins {
 }
 
 android {
-    namespace = "umc.study.umc_8th"
+    namespace = "com.example.umc_9th"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "umc.study.umc_8th"
+        applicationId = "com.example.umc_9th"
         minSdk = 26
         targetSdk = 34
         versionCode = 1
@@ -170,6 +170,9 @@ android {
     }
     buildFeatures {
         compose = true
+    }
+    buildFeatures{
+        viewBinding = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
