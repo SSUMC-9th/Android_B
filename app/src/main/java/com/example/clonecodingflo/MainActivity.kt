@@ -3,7 +3,6 @@ package com.example.clonecodingflo
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import com.example.clonecodingflo.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -12,23 +11,26 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setTheme(R.style.Theme_FLO)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val song = Song(binding.mainMiniplayerSingerTv.text.toString(), binding.mainMiniplayerSingerTv.text.toString())
-
-        binding.mainPlayerCl.setOnClickListener {
-            //startActivity(Intent(this, SongActivity::class.java))
-            val intent = Intent(this, SongActivity::class.java)
-            intent.putExtra("title", song.title)
-            intent.putExtra("singer", song.singer)
-            startActivity(intent)
-        }
         initBottomNavigation()
 
+        val song = Song(binding.mainMiniplayerTitleTv.text.toString(), binding.mainMiniplayerSingerTv.text.toString(),second = 0,playTime= 60,isPlaying = false)
 
 
-        Log.d("Song", song.title + song.singer)
+
+        binding.mainPlayerCl.setOnClickListener {
+            val intent = Intent(this,SongActivity::class.java)
+            intent.putExtra("title", song.title)
+            intent.putExtra("singer",song.singer)
+            intent.putExtra("second",song.second)
+            intent.putExtra("playTime",song.playTime)
+            intent.putExtra("isPlaying",song.isPlaying)
+            startActivity(intent)
+        }
+
     }
 
     private fun initBottomNavigation(){

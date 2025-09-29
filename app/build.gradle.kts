@@ -8,11 +8,11 @@ plugins {
 }
 
 android {
-    namespace = "umc.study.umc_8th"
+    namespace = "com.example.clonecodingflo"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "umc.study.umc_8th"
+        applicationId = "com.example.clonecodingflo"
         minSdk = 26
         targetSdk = 34
         versionCode = 1
@@ -41,6 +41,7 @@ android {
         jvmTarget = "17"
     }
     buildFeatures {
+        viewBinding = true
         compose = true
     }
     composeOptions {
