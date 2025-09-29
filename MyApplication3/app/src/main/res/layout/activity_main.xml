@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide_center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintGuide_percent="0.5"
+        android:orientation="vertical"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintGuide_percent="0.2"
+        android:orientation="horizontal"/>
+
+    <TextView
+        android:id="@+id/tv_launch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"
+        android:gravity="center"
+        android:layout_marginBottom="10dp"
+        app:layout_constraintStart_toStartOf="@id/guide_center"
+        app:layout_constraintEnd_toEndOf="@id/guide_center"
+        app:layout_constraintBottom_toBottomOf="@id/guide_horizontal"
+        android:text="오늘 하루는 어땠나요?\n감정 우표를 선택해주세요"/>
+
+    <ImageView
+        android:id="@+id/iv_happy"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/happy"
+        app:layout_constraintStart_toStartOf="@id/guide_center"
+        app:layout_constraintEnd_toEndOf="@id/guide_center"
+        app:layout_constraintTop_toTopOf="@id/guide_horizontal"/>
+
+    <ImageView
+        android:id="@+id/iv_joy"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/joy"
+        android:layout_marginTop="40dp"
+        app:layout_constraintStart_toStartOf="@id/guide_center"
+        app:layout_constraintEnd_toEndOf="@id/guide_center"
+        app:layout_constraintTop_toBottomOf="@id/iv_happy"/>
+
+    <ImageView
+        android:id="@+id/iv_soso"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/soso"
+        android:layout_marginTop="40dp"
+        app:layout_constraintStart_toStartOf="@id/guide_center"
+        app:layout_constraintEnd_toEndOf="@id/guide_center"
+        app:layout_constraintTop_toBottomOf="@id/iv_joy"/>
+
+    <ImageView
+        android:id="@+id/iv_nervous"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/nervous"
+        android:layout_marginTop="40dp"
+        app:layout_constraintStart_toStartOf="@id/guide_center"
+        app:layout_constraintEnd_toEndOf="@id/guide_center"
+        app:layout_constraintTop_toBottomOf="@id/iv_soso"/>
+
+    <ImageView
+        android:id="@+id/iv_angry"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/angry"
+        android:layout_marginTop="40dp"
+        app:layout_constraintStart_toStartOf="@id/guide_center"
+        app:layout_constraintEnd_toEndOf="@id/guide_center"
+        app:layout_constraintTop_toBottomOf="@id/iv_nervous"/>
+
+    <TextView
+        android:id="@+id/tv1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="더 없이 행복한 하루였어요"
+        android:textSize="15dp"
+        app:layout_constraintStart_toStartOf="@id/guide_center"
+        app:layout_constraintEnd_toEndOf="@id/guide_center"
+        app:layout_constraintTop_toBottomOf="@id/iv_happy"/>
+
+    <TextView
+        android:id="@+id/tv2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="들뜨고 흥분돼요"
+        android:textSize="15dp"
+        app:layout_constraintStart_toStartOf="@id/guide_center"
+        app:layout_constraintEnd_toEndOf="@id/guide_center"
+        app:layout_constraintTop_toBottomOf="@id/iv_joy"/>
+
+    <TextView
+        android:id="@+id/tv3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="그저 그래요"
+        android:textSize="15dp"
+        app:layout_constraintStart_toStartOf="@id/guide_center"
+        app:layout_constraintEnd_toEndOf="@id/guide_center"
+        app:layout_constraintTop_toBottomOf="@id/iv_soso"/>
+
+    <TextView
+        android:id="@+id/tv4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="불안해요"
+        android:textSize="15dp"
+        app:layout_constraintStart_toStartOf="@id/guide_center"
+        app:layout_constraintEnd_toEndOf="@id/guide_center"
+        app:layout_constraintTop_toBottomOf="@id/iv_nervous"/>
+
+    <TextView
+        android:id="@+id/tv5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="화나요"
+        android:textSize="15dp"
+        app:layout_constraintStart_toStartOf="@id/guide_center"
+        app:layout_constraintEnd_toEndOf="@id/guide_center"
+        app:layout_constraintTop_toBottomOf="@id/iv_angry"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
