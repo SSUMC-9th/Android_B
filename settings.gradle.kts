@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "UMC_8th"
+rootProject.name = "clonecodingflo"
 include(":app")
  
