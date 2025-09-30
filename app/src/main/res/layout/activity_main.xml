@@ -29,7 +29,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             android:orientation="vertical"
-            android:layout_marginStart="20dp">
+            android:layout_marginStart="19dp">
 
             <TextView
                 android:id="@+id/title"
