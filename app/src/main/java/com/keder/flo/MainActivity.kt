@@ -2,6 +2,7 @@ package com.keder.flo
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -26,15 +27,20 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
+        val song = Song(binding.mainMiniplayerTitleTv.text.toString(), binding.mainMiniplayerSingerTv.text.toString())
+
+
         binding.mainPlayerCl.setOnClickListener {
-            startActivity(Intent(this, SongActivity::class.java))
+            //startActivity(Intent(this, SongActivity::class.java))
+            val intent = Intent(this, SongActivity::class.java)
+            intent.putExtra("title", song.title)
+            intent.putExtra("singer", song.singer)
+            startActivity(intent)
         }
 
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.main_fragment_container) as NavHostFragment
         val navController = navHostFragment.navController
-
-
 
         binding.mainBnv.setupWithNavController(navController)
     }
