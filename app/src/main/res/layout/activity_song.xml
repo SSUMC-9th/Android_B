@@ -60,7 +60,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:text="제목"
+        android:text="라일락"
         android:textColor="@color/black"
         android:textSize="18sp"
         android:textStyle="bold"
@@ -73,7 +73,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:text="가수 이름"
+        android:text="IU"
         android:textColor="@color/black"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="@+id/song_music_title_tv"
@@ -241,6 +241,16 @@
         app:layout_constraintBottom_toBottomOf="@+id/song_player_layout"
         app:layout_constraintEnd_toStartOf="@+id/song_player_layout"
         app:layout_constraintTop_toTopOf="@+id/song_player_layout" />
+    <ImageView
+        android:id="@+id/song_selected_repeat_iv"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginEnd="30dp"
+        android:src="@drawable/repeat"
+        app:layout_constraintBottom_toBottomOf="@+id/song_player_layout"
+        app:layout_constraintEnd_toStartOf="@+id/song_player_layout"
+        app:layout_constraintTop_toTopOf="@+id/song_player_layout"
+        android:visibility="gone"/>
 
     <ImageView
         android:id="@+id/song_random_iv"
@@ -251,6 +261,17 @@
         app:layout_constraintBottom_toBottomOf="@+id/song_player_layout"
         app:layout_constraintStart_toEndOf="@+id/song_player_layout"
         app:layout_constraintTop_toTopOf="@+id/song_player_layout" />
+
+    <ImageView
+        android:id="@+id/song_selected_random_iv"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="30dp"
+        android:src="@drawable/random"
+        app:layout_constraintBottom_toBottomOf="@+id/song_player_layout"
+        app:layout_constraintStart_toEndOf="@+id/song_player_layout"
+        app:layout_constraintTop_toTopOf="@+id/song_player_layout"
+        android:visibility="gone"/>
 
     <ImageView
         android:id="@+id/song_instagram_iv"
