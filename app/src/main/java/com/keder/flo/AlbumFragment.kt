@@ -36,7 +36,7 @@ class AlbumFragment : Fragment() {
         val albumAdapter = AlbumVPAdapter(this, album)
         binding.albumContentVp.adapter = albumAdapter
         TabLayoutMediator(binding.albumContentTb, binding.albumContentVp){
-            tab, position ->
+                tab, position ->
             tab.text = information[position]
         }.attach()
         return binding.root
