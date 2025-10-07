@@ -11,7 +11,8 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.keder.flo.databinding.ActivityMainBinding
 
-class MainActivity : AppCompatActivity() {
+
+class MainActivity : AppCompatActivity(), OnSongItemClickListener{
     private lateinit var binding : ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,14 +28,18 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
+
         val song = Song(binding.mainMiniplayerTitleTv.text.toString(), binding.mainMiniplayerSingerTv.text.toString())
 
 
         binding.mainPlayerCl.setOnClickListener {
-            //startActivity(Intent(this, SongActivity::class.java))
+            // MiniPlayer에 표시된 현재 노래 정보를 가져와 SongActivity로 전달
+            val currentTitle = binding.mainMiniplayerTitleTv.text.toString()
+            val currentSinger = binding.mainMiniplayerSingerTv.text.toString()
+
             val intent = Intent(this, SongActivity::class.java)
-            intent.putExtra("title", song.title)
-            intent.putExtra("singer", song.singer)
+            intent.putExtra("title", currentTitle)
+            intent.putExtra("singer", currentSinger)
             startActivity(intent)
         }
 
@@ -44,4 +49,15 @@ class MainActivity : AppCompatActivity() {
 
         binding.mainBnv.setupWithNavController(navController)
     }
+
+    // 💡 MiniPlayer에 노래 정보를 업데이트하는 함수 구현
+    override fun onSongItemClick(title: String, singer: String) {
+        binding.mainMiniplayerTitleTv.text = title
+        binding.mainMiniplayerSingerTv.text = singer
+        // 필요하다면 MiniPlayer의 재생 버튼을 멈춤 버튼으로 변경하는 로직도 여기에 추가
+    }
+}
+
+interface OnSongItemClickListener {
+    fun onSongItemClick(title: String, singer: String)
 }
