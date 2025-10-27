@@ -17,13 +17,17 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        inputDummySongs()
+
         val song = Song(binding.title.text.toString(), binding.singer.text.toString())
         Log.d("Song", song.title + song.singer)
 
         binding.miniPlayer.setOnClickListener{
+            val editor = getSharedPreferences("song", MODE_PRIVATE).edit()
+            editor.putInt("songID", song.id)
+            editor.apply()
+
             val intent = Intent(this, SongActivity::class.java)
-            intent.putExtra("title", song.title)
-            intent.putExtra("singer", song.singer)
             startActivity(intent)
         }
 
@@ -60,5 +64,68 @@ class MainActivity : AppCompatActivity() {
                 else -> false
             }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        val spf = getSharedPreferences("song", MODE_PRIVATE)
+        val songId = spf.getInt("songId", 0)
+
+        val songDB = SongDatabase.getInstance(this)!!
+        val song = if(songId == 0){
+            songDB.songDao().getSong(1)
+        }else{
+            songDB.songDao().getSong(songId)
+        }
+
+        Log.d("song ID", song.id.toString())
+        setMiniPlayer(song)
+    }
+
+    private var isPlaying = false
+
+    private fun setMiniPlayer(song: Song) {
+        binding.title.text = song.title
+        binding.singer.text = song.singer
+
+        binding.mainMiniplayerBtn.setOnClickListener {
+            isPlaying = !isPlaying
+            val icon = if (isPlaying) R.drawable.btn_miniplay_pause else R.drawable.btn_player_play
+            binding.mainMiniplayerBtn.setImageResource(icon)
+        }
+    }
+
+
+
+    private fun inputDummySongs(){
+        val songDB = SongDatabase.getInstance(this)
+        val songs = songDB.songDao().getSongs()
+
+        if (songs.isNotEmpty()) return
+
+        songDB.songDao().insert(
+            Song(
+                "drama",
+                "aespa"
+            )
+        )
+
+        songDB.songDao().insert(
+            Song(
+                "ex0",
+                "아이유"
+            )
+        )
+
+        songDB.songDao().insert(
+            Song(
+                "ex1",
+                "방탄"
+            )
+        )
+
+        val _songs = songDB.songDao().getSongs()
+        Log.d("DB data", _songs.toString())
     }
 }
