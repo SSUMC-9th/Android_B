@@ -17,6 +17,7 @@ class MainActivity : AppCompatActivity(), OnSongItemClickListener{
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setTheme(R.style.Theme_Flo)
         enableEdgeToEdge()
 
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -29,17 +30,17 @@ class MainActivity : AppCompatActivity(), OnSongItemClickListener{
         }
 
 
-        val song = Song(binding.mainMiniplayerTitleTv.text.toString(), binding.mainMiniplayerSingerTv.text.toString())
+        val song = Song(binding.mainMiniplayerTitleTv.text.toString(), binding.mainMiniplayerSingerTv.text.toString(), 0,0, 60, false)
 
 
         binding.mainPlayerCl.setOnClickListener {
-            // MiniPlayer에 표시된 현재 노래 정보를 가져와 SongActivity로 전달
-            val currentTitle = binding.mainMiniplayerTitleTv.text.toString()
-            val currentSinger = binding.mainMiniplayerSingerTv.text.toString()
 
             val intent = Intent(this, SongActivity::class.java)
-            intent.putExtra("title", currentTitle)
-            intent.putExtra("singer", currentSinger)
+            intent.putExtra("title", song.title)
+            intent.putExtra("singer", song.singer)
+            intent.putExtra("second", song.second)
+            intent.putExtra("playTime", song.playTime)
+            intent.putExtra("isPlaying", song.isPlaying)
             startActivity(intent)
         }
 
