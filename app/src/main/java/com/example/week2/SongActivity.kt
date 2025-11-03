@@ -28,9 +28,16 @@ class SongActivity : AppCompatActivity() {
                 val pos = mp.currentPosition
                 binding.songSeekbar.progress = pos
                 binding.songCurrentTimeTv.text = formatTime(pos)
+
+                // 현재 위치 저장
+                val sp = getSharedPreferences(SP_NAME, MODE_PRIVATE).edit()
+                sp.putInt(SP_KEY_POS, pos)
+                sp.apply()
+
                 handler.postDelayed(this, 500)
             }
         }
+
     }
     private var isPlaying = false
 
@@ -65,6 +72,24 @@ class SongActivity : AppCompatActivity() {
         binding.songPreviousIv.setOnClickListener { moveSong(-1) }
         binding.songNextIv.setOnClickListener { moveSong(1) }
 
+        binding.songSeekbar.max = 16000
+
+        val sp = getSharedPreferences(SP_NAME, MODE_PRIVATE)
+        val lastPos = sp.getInt(SP_KEY_POS, 0)
+        val lastPlay = sp.getBoolean(SP_KEY_PLAY, false)
+
+        mediaPlayer?.seekTo(lastPos)
+        binding.songSeekbar.progress = lastPos
+
+        setPlayerStatus(lastPlay)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        val sp = getSharedPreferences(SP_NAME, MODE_PRIVATE).edit()
+        sp.putInt(SP_KEY_POS, mediaPlayer?.currentPosition ?: 0)
+        sp.putBoolean(SP_KEY_PLAY, isPlaying)
+        sp.apply()
     }
 
     private fun initSong(){
@@ -111,8 +136,7 @@ class SongActivity : AppCompatActivity() {
         binding.songSingerNameTv.text = song.singer
 
         mediaPlayer?.let { mp ->
-            binding.songSeekbar.max = mp.duration
-            binding.songTotalTimeTv.text = formatTime(mp.duration)
+            binding.songTotalTimeTv.text = formatTime(16000)
             binding.songCurrentTimeTv.text = formatTime(mp.currentPosition)
         }
 
