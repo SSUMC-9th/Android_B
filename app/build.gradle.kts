@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("androidx.navigation.safeargs.kotlin")
+    kotlin("kapt")
 }
 
 android {
@@ -51,4 +52,12 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     implementation("androidx.viewpager2:viewpager2:1.0.0")
+
+    // Room Runtime (기본 라이브러리)
+    val room_version = "2.6.1" // 🌟 최신 버전 확인 후 사용
+
+    implementation("androidx.room:room-runtime:$room_version")
+
+    // Room Kapt (컴파일러 주석 프로세서: DAO 구현체 자동 생성)
+    kapt("androidx.room:room-compiler:$room_version")
 }
