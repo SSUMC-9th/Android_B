@@ -1,179 +1,40 @@
-//plugins {
-//    alias(libs.plugins.android.application)
-//    alias(libs.plugins.jetbrains.kotlin.android)
-//    id("com.google.devtools.ksp")
-//    id("dagger.hilt.android.plugin")
-//    id("androidx.navigation.safeargs.kotlin")
-//    id("org.jetbrains.kotlin.kapt")
-//}
-//
-//android {
-//    namespace = "umc.study.umc_8th"
-//    compileSdk = 34
-//
-//    defaultConfig {
-//        applicationId = "umc.study.umc_8th"
-//        minSdk = 26
-//        targetSdk = 34
-//        versionCode = 1
-//        versionName = "1.0"
-//
-//        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-//        vectorDrawables {
-//            useSupportLibrary = true
-//        }
-//    }
-//
-//    buildTypes {
-//        release {
-//            isMinifyEnabled = false
-//            proguardFiles(
-//                getDefaultProguardFile("proguard-android-optimize.txt"),
-//                "proguard-rules.pro"
-//            )
-//        }
-//    }
-//    compileOptions {
-//        sourceCompatibility = JavaVersion.VERSION_1_7
-//        targetCompatibility = JavaVersion.VERSION_1_7
-//    }
-//    kotlinOptions {
-//        jvmTarget = "1.7"
-//    }
-//    buildFeatures {
-//        compose = true
-//    }
-//    composeOptions {
-//        kotlinCompilerExtensionVersion = "1.5.1"
-//    }
-//    packaging {
-//        resources {
-//            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-//        }
-//    }
-//}
-//
-//dependencies {
-//    implementation(libs.androidx.core.ktx)
-//    implementation(libs.androidx.lifecycle.runtime.ktx)
-//    implementation(libs.androidx.activity.compose)
-//    implementation(platform(libs.androidx.compose.bom))
-//    implementation(libs.androidx.ui)
-//    implementation(libs.androidx.ui.graphics)
-//    implementation(libs.androidx.ui.tooling.preview)
-//    implementation(libs.androidx.material3) // 이미 추가됨
-//    implementation("androidx.compose.material3:material3:1.0.0") // 추가된 부분
-//    testImplementation(libs.junit)
-//    androidTestImplementation(libs.androidx.junit)
-//    androidTestImplementation(libs.androidx.espresso.core)
-//    androidTestImplementation(platform(libs.androidx.compose.bom))
-//    androidTestImplementation(libs.androidx.ui.test.junit4)
-//    debugImplementation(libs.androidx.ui.tooling)
-//    debugImplementation(libs.androidx.ui.test.manifest)
-//    implementation(libs.androidx.appcompat)
-//    implementation(libs.material)
-//    implementation(libs.androidx.activity)
-//    implementation(libs.androidx.constraintlayout)
-//    implementation(libs.androidx.constraintlayout.compose)
-//    implementation(libs.androidx.lifecycle.livedata.ktx)
-//    implementation(libs.androidx.lifecycle.viewmodel.ktx) // 추가된 부분
-//    implementation(libs.androidx.navigation.fragment.ktx)
-//    implementation(libs.androidx.navigation.ui.ktx)
-//
-//    // Paging 라이브러리 추가
-//    implementation("androidx.paging:paging-runtime:3.1.1")
-//
-//    // Hilt Dependency Injection
-//    implementation("com.google.dagger:hilt-android:2.49")
-//    kapt("com.google.dagger:hilt-compiler:2.49")
-//
-//    // Gson
-//    implementation("com.google.code.gson:gson:2.10.1")
-//
-//    // Retrofit
-//    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-//    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-//    implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
-//
-//    // OkHttp
-//    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.2")
-//    implementation("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.2")
-//
-//    // Lifecycle
-//    implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
-//
-//    // ViewModel
-//    implementation("androidx.activity:activity-ktx:1.9.0")
-//    implementation("androidx.fragment:fragment-ktx:1.6.2")
-//
-//    // Glide Image Loading Library
-//    implementation("com.github.bumptech.glide:glide:4.14.2")
-//    kapt("com.github.bumptech.glide:ksp:4.14.2")
-//
-//    // CardView
-//    implementation("androidx.cardview:cardview:1.0.0")
-//
-//    // Coroutines Dependency
-//    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
-//    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
-//
-//    // Safe Args
-//    implementation("androidx.navigation:navigation-fragment-ktx:2.7.3")
-//    implementation("androidx.navigation:navigation-ui-ktx:2.7.3")
-//
-//    // ROOM Database
-//    implementation("androidx.room:room-runtime:2.6.1")
-//    kapt("androidx.room:room-compiler:2.6.1")
-//    implementation("androidx.room:room-ktx:2.6.1")
-//}
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.jetbrains.kotlin.android)
-    id("com.google.devtools.ksp")
-    id("dagger.hilt.android.plugin")
-    id("androidx.navigation.safeargs.kotlin")
-    id("org.jetbrains.kotlin.kapt")
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
 }
-
+//C:\Users\LG\AppData\Local\Android\Sdk
 android {
-    namespace = "umc.study.umc_8th"
-    compileSdk = 34
+    namespace = "com.example.umc_9th"
+    compileSdk = 36
 
     defaultConfig {
-        applicationId = "umc.study.umc_8th"
+        applicationId = "com.example.umc_9th"
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables {
-            useSupportLibrary = true
-        }
     }
 
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-    kotlinOptions {
-        jvmTarget = "17"
-    }
     buildFeatures {
+        viewBinding = true
         compose = true
     }
+
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.1" // Compose Compiler 버전
     }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -182,75 +43,33 @@ android {
 }
 
 dependencies {
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3) // 이미 추가됨
-    implementation("androidx.compose.material3:material3:1.0.0") // 추가된 부분
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    implementation(libs.androidx.activity)
-    implementation(libs.androidx.constraintlayout)
-    implementation(libs.androidx.constraintlayout.compose)
-    implementation(libs.androidx.lifecycle.livedata.ktx)
-    implementation(libs.androidx.lifecycle.viewmodel.ktx) // 추가된 부분
-    implementation(libs.androidx.navigation.fragment.ktx)
-    implementation(libs.androidx.navigation.ui.ktx)
+    // 💡 Jetpack Compose BOM (버전만 지정하면 자동으로 맞춰줌)
+    implementation(platform("androidx.compose:compose-bom:2024.05.00"))
+    implementation("me.relex:circleindicator:2.1.6")
+// AndroidX 버전
+    // ✅ Compose 핵심 라이브러리들 (런타임 포함)
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.ui:ui-graphics")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.runtime:runtime")
 
-    // Paging 라이브러리 추가
-    implementation("androidx.paging:paging-runtime:3.1.1")
+    // 디버깅용 Compose 툴링
+    debugImplementation("androidx.compose.ui:ui-tooling")
+    debugImplementation("androidx.compose.ui:ui-test-manifest")
 
-    // Hilt Dependency Injection
-    implementation("com.google.dagger:hilt-android:2.49")
-    ksp("com.google.dagger:hilt-compiler:2.49")
+    // ✅ 기존 라이브러리들
+    implementation("androidx.core:core-splashscreen:1.0.1")
+    implementation("com.google.code.gson:gson:2.11.0")
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
+    implementation("com.google.android.material:material:1.12.0")
+    implementation("androidx.core:core-ktx:1.13.1")
+    implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation("androidx.activity:activity-compose:1.8.0") // compose와 호환되는 Activity
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
 
-    // Gson
-    implementation("com.google.code.gson:gson:2.10.1")
-
-    // Retrofit
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
-
-    // OkHttp
-    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.2")
-    implementation("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.2")
-
-    // Lifecycle
-    implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
-
-    // ViewModel
-    implementation("androidx.activity:activity-ktx:1.9.0")
-    implementation("androidx.fragment:fragment-ktx:1.6.2")
-
-    // Glide Image Loading Library
-    implementation("com.github.bumptech.glide:glide:4.14.2")
-    ksp("com.github.bumptech.glide:ksp:4.14.2")
-
-    // CardView
-    implementation("androidx.cardview:cardview:1.0.0")
-
-    // Coroutines Dependency
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
-
-    // Safe Args
-    implementation("androidx.navigation:navigation-fragment-ktx:2.7.3")
-    implementation("androidx.navigation:navigation-ui-ktx:2.7.3")
-
-    // ROOM Database
-    implementation("androidx.room:room-runtime:2.6.1")
-    ksp("androidx.room:room-compiler:2.6.1")
-    implementation("androidx.room:room-ktx:2.6.1")
+    // 테스트
+    testImplementation("junit:junit:4.13.2")
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 }
