@@ -9,11 +9,15 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import com.google.gson.Gson
 import com.keder.flo.databinding.ActivityMainBinding
 
 
-class MainActivity : AppCompatActivity(), OnSongItemClickListener{
+class MainActivity : AppCompatActivity(){
     private lateinit var binding : ActivityMainBinding
+
+    private var song : Song = Song()
+    private var gson: Gson = Gson()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,8 +34,6 @@ class MainActivity : AppCompatActivity(), OnSongItemClickListener{
         }
 
 
-        val song = Song(binding.mainMiniplayerTitleTv.text.toString(), binding.mainMiniplayerSingerTv.text.toString(), 0,0, 60, false)
-
 
         binding.mainPlayerCl.setOnClickListener {
 
@@ -41,6 +43,7 @@ class MainActivity : AppCompatActivity(), OnSongItemClickListener{
             intent.putExtra("second", song.second)
             intent.putExtra("playTime", song.playTime)
             intent.putExtra("isPlaying", song.isPlaying)
+            intent.putExtra("music", song.music)
             startActivity(intent)
         }
 
@@ -51,14 +54,26 @@ class MainActivity : AppCompatActivity(), OnSongItemClickListener{
         binding.mainBnv.setupWithNavController(navController)
     }
 
-    // 💡 MiniPlayer에 노래 정보를 업데이트하는 함수 구현
-    override fun onSongItemClick(title: String, singer: String) {
-        binding.mainMiniplayerTitleTv.text = title
-        binding.mainMiniplayerSingerTv.text = singer
-        // 필요하다면 MiniPlayer의 재생 버튼을 멈춤 버튼으로 변경하는 로직도 여기에 추가
-    }
-}
 
-interface OnSongItemClickListener {
-    fun onSongItemClick(title: String, singer: String)
+
+    private fun setMiniPlayer(song : Song){
+        binding.mainMiniplayerTitleTv.text = song.title
+        binding.mainMiniplayerSingerTv.text = song.singer
+        binding.mainMiniplayerProgressSb.progress = (song.second*100000)/song.playTime
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val sharedPreferences = getSharedPreferences("song", MODE_PRIVATE)
+        val songJson = sharedPreferences.getString("songData", null)
+
+        song = if(songJson == null){
+            Song("라일락", "아이유(IU)", 0, 0,60, false, "music_lilac")
+        }else{
+            gson.fromJson(songJson, Song::class.java)
+        }
+
+        setMiniPlayer(song)
+
+    }
 }
