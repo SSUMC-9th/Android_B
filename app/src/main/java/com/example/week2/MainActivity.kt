@@ -9,6 +9,10 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.week2.databinding.ActivityMainBinding
 
+const val SP_NAME = "music_pref"
+const val SP_KEY_POS = "posMs"
+const val SP_KEY_PLAY = "isPlaying"
+
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
@@ -19,12 +23,14 @@ class MainActivity : AppCompatActivity() {
 
         inputDummySongs()
 
+        binding.mainSeekbar.max = 16000
+
         val song = Song(binding.title.text.toString(), binding.singer.text.toString())
         Log.d("Song", song.title + song.singer)
 
         binding.miniPlayer.setOnClickListener{
             val editor = getSharedPreferences("song", MODE_PRIVATE).edit()
-            editor.putInt("songID", song.id)
+            editor.putInt("songId", song.id)
             editor.apply()
 
             val intent = Intent(this, SongActivity::class.java)
@@ -81,6 +87,10 @@ class MainActivity : AppCompatActivity() {
 
         Log.d("song ID", song.id.toString())
         setMiniPlayer(song)
+
+        val sp = getSharedPreferences(SP_NAME, MODE_PRIVATE)
+        val pos = sp.getInt(SP_KEY_POS, 0)
+        binding.mainSeekbar.progress = pos.coerceAtMost(16000)
     }
 
     private var isPlaying = false

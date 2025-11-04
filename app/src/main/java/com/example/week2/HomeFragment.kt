@@ -5,14 +5,23 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.week2.databinding.FragmentHomeBinding
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
     lateinit var binding: FragmentHomeBinding
     private var albumDatas = ArrayList<Album>()
+
+    private var autoScrollJob: Job? = null
+    private var userDragging = false
+    private val AUTO_INTERVAL = 3000L
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,6 +67,37 @@ class HomeFragment : Fragment() {
         })
 
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        startAutoScroll()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        stopAutoScroll()
+    }
+
+    private fun startAutoScroll(){
+        stopAutoScroll()
+        autoScrollJob = viewLifecycleOwner.lifecycleScope.launch {
+            val vp = binding.homeBannerVp2
+            val adapter = vp.adapter ?: return@launch
+            while (isActive) {
+                delay(AUTO_INTERVAL)
+                val count = adapter.itemCount
+                if (count > 1 && !userDragging) {
+                    val next = (vp.currentItem + 1) % count  // 순환
+                    vp.setCurrentItem(next, true)
+                }
+            }
+        }
+    }
+
+    private fun stopAutoScroll() {
+        autoScrollJob?.cancel()
+        autoScrollJob = null
     }
 
 }
