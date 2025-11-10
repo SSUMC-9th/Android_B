@@ -17,12 +17,10 @@ class HomeFragment : Fragment() {
     lateinit var binding: FragmentHomeBinding
     private var albumDatas = ArrayList<Album>()
 
-    // Background ViewPager 자동 슬라이드
     private val backgroundHandler = Handler(Looper.getMainLooper())
     private lateinit var backgroundSlideRunnable: Runnable
     private val BACKGROUND_SLIDE_DELAY: Long = 3000 // 3초 간격
 
-    // Banner ViewPager 자동 슬라이드
     private val bannerHandler = Handler(Looper.getMainLooper())
     private lateinit var bannerSlideRunnable: Runnable
     private val BANNER_SLIDE_DELAY: Long = 5000 // 5초 간격
@@ -34,7 +32,6 @@ class HomeFragment : Fragment() {
     ): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
 
-        // 1. 앨범 데이터
         albumDatas.apply {
             add(Album("Butter", "방탄소년단 (BTS)", R.drawable.img_album_exp))
             add(Album("Lilac", "아이유 (IU)", R.drawable.img_album_exp2))
@@ -44,7 +41,6 @@ class HomeFragment : Fragment() {
             add(Album("Lilac3", "아이유 (IU)", R.drawable.img_album_exp2))
         }
 
-        // 2. RecyclerView 설정
         val albumRVAdapter = AlbumRVAdapter(albumDatas)
         binding.homeTodayMusicAlbumRv.adapter = albumRVAdapter
         binding.homeTodayMusicAlbumRv.layoutManager =
@@ -61,7 +57,6 @@ class HomeFragment : Fragment() {
             }
         })
 
-        // 3. Background ViewPager 설정
         val backgroundAdapter = BackgroundPagerAdapter(this)
         backgroundAdapter.addFragment(BackgroundFragment(R.drawable.img_first_album_default))
         backgroundAdapter.addFragment(BackgroundFragment(R.drawable.img_first_album_default))
@@ -70,14 +65,12 @@ class HomeFragment : Fragment() {
         binding.homePannelBackgroundVp.orientation = ViewPager2.ORIENTATION_HORIZONTAL
         binding.homePannelIndicator.setViewPager(binding.homePannelBackgroundVp)
 
-        // ✅ Background 자동 슬라이드 (수정된 버전)
         backgroundSlideRunnable = Runnable {
             val viewPager = binding.homePannelBackgroundVp
             val adapter = viewPager.adapter ?: return@Runnable
 
             val nextPosition = viewPager.currentItem + 1
             if (nextPosition >= adapter.itemCount) {
-                // 마지막 → 처음으로 이동 시 애니메이션 제거
                 viewPager.setCurrentItem(0, false)
             } else {
                 viewPager.setCurrentItem(nextPosition, true)
@@ -104,14 +97,12 @@ class HomeFragment : Fragment() {
             }
         })
 
-        // 4. Banner ViewPager 설정
         val bannerAdapter = BackgroundPagerAdapter(this)
         bannerAdapter.addFragment(BannerFragment(R.drawable.img_home_viewpager_exp))
         bannerAdapter.addFragment(BannerFragment(R.drawable.img_home_viewpager_exp2))
         binding.homeBannerVp.adapter = bannerAdapter
         binding.homeBannerVp.orientation = ViewPager2.ORIENTATION_HORIZONTAL
 
-        // ✅ Banner 자동 슬라이드 (동일한 방식으로 안정화)
         bannerSlideRunnable = Runnable {
             val viewPager = binding.homeBannerVp
             val adapter = viewPager.adapter ?: return@Runnable
@@ -146,7 +137,6 @@ class HomeFragment : Fragment() {
         return binding.root
     }
 
-    // 5. 생명주기별 자동 슬라이드 제어
     override fun onResume() {
         super.onResume()
         backgroundHandler.removeCallbacks(backgroundSlideRunnable)

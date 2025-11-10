@@ -28,7 +28,7 @@ class SongFragment : Fragment() {
             add(Song("Lilac", "아이유 (IU)"))
         }
 
-        val songRVAdapter = SaveSongRVAdapter(songData, false)
+        val songRVAdapter = SaveSongRVAdapter( false)
         binding.albumSongRv.adapter = songRVAdapter
         binding.albumSongRv.layoutManager = LinearLayoutManager(context,
             LinearLayoutManager.VERTICAL, false)

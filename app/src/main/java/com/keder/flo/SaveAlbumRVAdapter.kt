@@ -9,7 +9,7 @@ import com.keder.flo.databinding.ItemLockerAlbumBinding
 
 class SaveAlbumRVAdapter(private val songList : ArrayList<Song>, private val isAlbumView : Boolean = false) : RecyclerView.Adapter<SaveAlbumRVAdapter.ViewHolder>() {
     interface MyItemClickListener{
-        fun onRemoveSong(songId : Int)
+        fun onRemoveSong(songId : String)
     }
     private lateinit var mItemClickListener : MyItemClickListener
 
