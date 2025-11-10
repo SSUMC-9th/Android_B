@@ -32,7 +32,7 @@ class AlbumRVAdapter (private val albumList: ArrayList<Album>) : RecyclerView.Ad
         fun bind(album: Album){
             binding.itemAlbumTitleTv.text = album.title
             binding.itemAlbumSingerTv.text = album.singer
-            binding.itemAlbumCoverImgIv.setImageResource(album.coverImg!!)
+            album.coverImg?.let { binding.itemAlbumCoverImgIv.setImageResource(it) }
         }
 
     }
