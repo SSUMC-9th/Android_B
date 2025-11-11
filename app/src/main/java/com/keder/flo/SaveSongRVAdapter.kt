@@ -7,9 +7,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.keder.flo.databinding.ItemSongBinding
 
-class SaveSongRVAdapter(private val songList : ArrayList<Song>, private val isAbumView : Boolean = false) : RecyclerView.Adapter<SaveSongRVAdapter.ViewHolder>() {
+class SaveSongRVAdapter(private val isAbumView : Boolean = false) : RecyclerView.Adapter<SaveSongRVAdapter.ViewHolder>() {
+    private val songs = ArrayList<Song>()
     interface MyItemClickListener{
-        fun onRemoveSong(songId : Int)
+        fun onRemoveSong(songId : String)
     }
     private lateinit var mItemClickListener : MyItemClickListener
 
@@ -29,27 +30,39 @@ class SaveSongRVAdapter(private val songList : ArrayList<Song>, private val isAb
         holder: SaveSongRVAdapter.ViewHolder,
         position: Int
     ) {
-        holder.bind(songList[position], position + 1, isAbumView)
+        holder.bind(songs[position],position+1, isAbumView)
         holder.binding.itemSongMoreIv.setOnClickListener {
-            mItemClickListener.onRemoveSong(songList[position].id)
+            mItemClickListener.onRemoveSong(songs[position].id)
             removeSong(position)
         }
     }
 
-    override fun getItemCount(): Int = songList.size
+    override fun getItemCount(): Int = songs.size
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun addSongs(songs : ArrayList<Song>){
+        this.songs.clear()
+        this.songs.addAll(songs)
+        notifyDataSetChanged()
+    }
 
     @SuppressLint("NotifyDataSetChanged")
     private fun removeSong(position: Int){
-        songList.removeAt(position)
+        songs.removeAt(position)
         notifyDataSetChanged()
     }
 
     inner class ViewHolder(val binding : ItemSongBinding) : RecyclerView.ViewHolder(binding.root){
+        // ⬇️ 4. (수정) bind 함수가 position을 받도록 수정 (기존 코드 유지)
         fun bind(song : Song, position : Int, isAlbumView : Boolean){
             if(isAlbumView){
                 binding.itemSongOrderTv.visibility = View.GONE
                 binding.itemSongImgIv.visibility = View.VISIBLE
-                binding.itemSongImgIv.setImageResource(song.coverImg!!)
+
+                // ⬇️ 5. (수정) NPE 방지 (!! -> ?.let)
+                song.coverImg?.let {
+                    binding.itemSongImgIv.setImageResource(it)
+                }
             }else{
                 binding.itemSongOrderTv.visibility = View.VISIBLE
                 binding.itemSongImgIv.visibility = View.GONE
