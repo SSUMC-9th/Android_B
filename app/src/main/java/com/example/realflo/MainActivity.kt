@@ -16,7 +16,7 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var binding: ActivityMainBinding
 
-    // 미니플레이어에서 표시할 현재 곡(간단 캐시)
+    // 미니플레이어에 표시할 현재 곡 (DB에 있는 실제 Song)
     private var currentSong: Song? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,10 +25,11 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // 1) 최초 화면: 홈
+        // 기본 화면 = 홈
         replaceFragment(HomeFragment())
+        binding.mainBnv.selectedItemId = R.id.homeFragment
 
-        // 2) BottomNavigation 탭 전환
+        // 하단 탭
         binding.mainBnv.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.homeFragment -> {
@@ -40,85 +41,148 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.searchFragment -> {
-                    // 검색 탭이 있다면 여기에 프래그먼트 연결
-                    // replaceFragment(SearchFragment())
+                    // 검색 프래그먼트 쓰면 여기서 교체
                     true
                 }
                 else -> false
             }
         }
-        // 기본 선택 탭
-        binding.mainBnv.selectedItemId = R.id.homeFragment
 
-        // 3) 미니플레이어 클릭 → SongActivity로 이동
+        // ⭐ 미니플레이어 클릭 → SongActivity 실행
         binding.mainPlayerCl.setOnClickListener {
-            // 현재 저장된 songId 기반으로 이동
             val sp = getSharedPreferences("song", MODE_PRIVATE)
-            val songId = sp.getInt("songId", -1)
-            val intent = Intent(this, SongActivity::class.java)
-            if (songId != -1) {
-                intent.putExtra("songId", songId)
-            } else {
-                // songId가 없을 때를 대비해 제목/가수만 최소 전달(선택)
-                currentSong?.let {
-                    intent.putExtra("songId", it.id)
-                    intent.putExtra("title", it.title)
-                    intent.putExtra("singer", it.singer)
+            var songId = sp.getInt("songId", -1)
+
+            if (songId <= 0) {
+                // prefs 에 저장된 게 없으면 currentSong 기준으로라도 열어줌(라일락 포함)
+                val fallback = currentSong
+                if (fallback == null || fallback.id <= 0) {
+                    android.util.Log.w("MainActivity", "열 수 있는 곡이 없습니다.")
+                    return@setOnClickListener
                 }
+                songId = fallback.id
+                sp.edit().putInt("songId", songId).apply()
             }
-            startActivity(intent)
+
+            openSong(songId)
         }
 
-        // 미니플레이어 재생/일시정지 버튼(있으면) 동작 예시
-        binding.mainMiniplayerBtn.setOnClickListener { togglePlay(false) }
-        binding.mainPauseBtn.setOnClickListener { togglePlay(true) }
+        // 미니플레이어 재생/일시정지 버튼 (UI만 토글)
+        binding.mainMiniplayerBtn.setOnClickListener { togglePlay(true) }
+        binding.mainPauseBtn.setOnClickListener { togglePlay(false) }
     }
 
     override fun onStart() {
         super.onStart()
-        // 저장된 songId로 DB에서 현재 곡 로드 → 미니플레이어 렌더링
+
         val sp = getSharedPreferences("song", MODE_PRIVATE)
-        val songId = sp.getInt("songId", -1)
+        val savedSongId = sp.getInt("songId", -1)
 
         lifecycleScope.launch {
+            val db = FloDatabase.getInstance(this@MainActivity)
+
             val song = withContext(Dispatchers.IO) {
-                if (songId != -1) {
-                    FloDatabase.getInstance(this@MainActivity).songDao().getSongById(songId)
-                } else null
+                val dao = db.songDao()
+
+                // 1) DB에서 전체 곡 조회
+                val all = dao.getSongs()
+
+                // 1-1) DB에 곡이 하나도 없으면 → 라일락을 직접 DB에 집어넣는다
+                if (all.isEmpty()) {
+                    val lilac = Song(
+                        title = "라일락",
+                        singer = "아이유(IU)",
+                        playTime = 214,
+                        music = "music_lilac",  // res/raw/music_lilac.mp3 기준
+                        albumIdx = 0,
+                        isLike = false
+                    )
+                    dao.insert(lilac)
+
+                    // 방금 넣은 라일락 다시 읽어오기 (id가 자동생성되니까)
+                    dao.getSongs().firstOrNull()
+                } else {
+                    // 2) DB에 곡은 있는데, 저장된 songId가 있으면 그 곡 우선
+                    if (savedSongId > 0) {
+                        dao.getSongById(savedSongId) ?: all.first()
+                    } else {
+                        // 3) songId 없으면 라일락 우선 선택, 없으면 첫 곡
+                        all.firstOrNull {
+                            it.title == "라일락" || it.title.equals("LILAC", true)
+                        } ?: all.first()
+                    }
+                }
             }
-            currentSong = song ?: currentSong
-            currentSong?.let { setMiniPlayer(it) }
+
+            currentSong = song
+
+            if (song != null) {
+                // prefs에 songId가 아직 없었다면 여기서 한 번 저장 (라일락 포함)
+                if (savedSongId <= 0 && song.id > 0) {
+                    sp.edit().putInt("songId", song.id).apply()
+                }
+                setMiniPlayer(song)
+            } else {
+                // 진짜로 DB에 곡이 아무것도 없을 때만 (거의 없겠지만)
+                setEmptyMiniPlayer()
+            }
         }
     }
 
-    // 프래그먼트 전환 헬퍼
-    private fun replaceFragment(Fragment: Fragment) {
+    // SongActivity 열기
+    private fun openSong(songId: Int) {
+        if (songId <= 0) return
+        val intent = Intent(this, SongActivity::class.java)
+        intent.putExtra("songId", songId)
+        startActivity(intent)
+    }
+
+    // 프래그먼트 전환
+    private fun replaceFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
-            .replace(R.id.main_frm, Fragment)
+            .replace(R.id.main_frm, fragment)
             .commit()
     }
 
-    // 미니플레이어 UI 렌더링
+    // ✅ 실제 곡 있을 때 미니플레이어 UI
     private fun setMiniPlayer(song: Song) {
+        binding.mainPlayerCl.visibility = View.VISIBLE
+
         binding.mainMiniplayerTitleTv.text = song.title
         binding.mainMiniplayerSingerTv.text = song.singer
 
-        // 진행바는 저장된 second/playTime 기반으로 계산 (0 나눔 방지)
         val progress = if (song.playTime == 0) 0 else (song.second * 100 / song.playTime)
         binding.mainMiniplayerProgressSb.progress = progress
-    }
 
-    // 미니플레이어 버튼 샘플 동작(재생/일시정지 토글 시 아이콘만 교체)
-    private fun togglePlay(toPlay: Boolean) {
-        // 여기서는 UI 아이콘만 토글 (실재생 제어는 SongActivity에서 함)
-        if (toPlay) {
+        if (song.isPlaying) {
             binding.mainMiniplayerBtn.visibility = View.GONE
             binding.mainPauseBtn.visibility = View.VISIBLE
         } else {
             binding.mainMiniplayerBtn.visibility = View.VISIBLE
             binding.mainPauseBtn.visibility = View.GONE
         }
-        // 필요하면 isPlaying을 SharedPreferences로 저장해서 SongActivity와 동기화 가능
-        // getSharedPreferences("song", MODE_PRIVATE).edit().putBoolean("isPlaying", toPlay).apply()
+    }
+
+    // ✅ DB에 곡이 아예 없을 때만 호출 (거의 안 쓰일 것)
+    private fun setEmptyMiniPlayer() {
+        binding.mainPlayerCl.visibility = View.VISIBLE
+
+        binding.mainMiniplayerTitleTv.text = "재생할 곡이 없습니다"
+        binding.mainMiniplayerSingerTv.text = "앱에 곡 데이터를 추가해 주세요"
+        binding.mainMiniplayerProgressSb.progress = 0
+
+        binding.mainMiniplayerBtn.visibility = View.VISIBLE
+        binding.mainPauseBtn.visibility = View.GONE
+    }
+
+    // 미니플레이어 재생/일시정지 토글 (UI만)
+    private fun togglePlay(isPlaying: Boolean) {
+        if (isPlaying) {
+            binding.mainMiniplayerBtn.visibility = View.GONE
+            binding.mainPauseBtn.visibility = View.VISIBLE
+        } else {
+            binding.mainMiniplayerBtn.visibility = View.VISIBLE
+            binding.mainPauseBtn.visibility = View.GONE
+        }
     }
 }

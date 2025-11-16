@@ -14,6 +14,9 @@ interface SongDao {
     @Insert
     suspend fun insertAll(songs: List<Song>)
 
+    @Insert
+    suspend fun insertSongs(songs: List<Song>)
+
     @Update
     suspend fun update(song: Song)
 

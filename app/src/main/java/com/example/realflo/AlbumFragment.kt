@@ -17,7 +17,10 @@ class AlbumFragment : Fragment() {
 
     private lateinit var binding: FragmentAlbumBinding
     private lateinit var db: FloDatabase
-    private val information = arrayListOf("수록곡","상세정보","영상")
+    private val information = arrayListOf("수록곡", "상세정보", "영상")
+
+    private var currentAlbum: Album? = null
+    private var albumId: Int = -1
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -29,29 +32,70 @@ class AlbumFragment : Fragment() {
 
         // 뒤로가기
         binding.albumBackIv.setOnClickListener {
-            requireActivity().supportFragmentManager.popBackStack()
+            parentFragmentManager.popBackStack()
         }
 
-        // 1) HomeFragment에서 넘긴 albumId 받기
-        val albumId = arguments?.getInt("albumId") ?: -1
+        // HomeFragment 에서 넘어온 앨범 ID
+        albumId = arguments?.getInt("albumId") ?: -1
 
-        // 2) 앨범 헤더 채우기 (제목/가수/커버)
-        viewLifecycleOwner.lifecycleScope.launch {
-            val album = withContext(Dispatchers.IO) { db.albumDao().getAlbum(albumId) }
-            album?.let {
-                binding.albumMusicTitleTv.text = it.title
-                binding.albumSingerNameTv.text = it.singer
-                it.coverImg?.let { resId -> binding.albumAlbumIv.setImageResource(resId) }
-            }
-        }
+        // 1) 앨범 정보 로드
+        loadAlbumHeader()
 
-        // 3) ViewPager에 albumId 넘겨주기
+        // 2) ViewPager 설정
         val albumAdapter = AlbumVPAdapter(this, albumId)
         binding.albumContentVp.adapter = albumAdapter
+
         TabLayoutMediator(binding.albumContentTb, binding.albumContentVp) { tab, position ->
             tab.text = information[position]
         }.attach()
 
         return binding.root
+    }
+
+    private fun loadAlbumHeader() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            val album = withContext(Dispatchers.IO) {
+                db.albumDao().getAlbumById(albumId)
+            }
+
+            currentAlbum = album
+
+            album?.let {
+                binding.albumMusicTitleTv.text = it.title
+                binding.albumSingerNameTv.text = it.singer
+                it.coverImg?.let { resId -> binding.albumAlbumIv.setImageResource(resId) }
+
+                setLikeUI(it.isLike)
+
+                // 좋아요 버튼 동작
+                binding.albumLikeIv.setOnClickListener {
+                    toggleAlbumLike()
+                }
+            }
+        }
+    }
+
+    private fun toggleAlbumLike() {
+        val album = currentAlbum ?: return
+        val newValue = !album.isLike
+
+        // UI 즉시 변경
+        setLikeUI(newValue)
+
+        // DB 업데이트
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+            db.albumDao().updateAlbumLike(album.id, newValue)
+        }
+
+        // 메모리도 갱신
+        album.isLike = newValue
+    }
+
+    private fun setLikeUI(isLike: Boolean) {
+        if (isLike) {
+            binding.albumLikeIv.setImageResource(R.drawable.ic_my_like_on)
+        } else {
+            binding.albumLikeIv.setImageResource(R.drawable.ic_my_like_off)
+        }
     }
 }
