@@ -5,14 +5,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
 import com.example.realflo.databinding.FragmentHomeBinding
+import data.local.FloDatabase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class HomeFragment : Fragment() {
 
     private lateinit var binding: FragmentHomeBinding
-    private var albumDatas = ArrayList<Album>()
+    private lateinit var db: FloDatabase
+
+    private val albumDatas = ArrayList<Album>()
+    private lateinit var albumRVAdapter: AlbumRVAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -20,30 +28,53 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
-//        binding.homePannelAlbumImg01Iv.setOnClickListener {
-//            (context as MainActivity).supportFragmentManager.beginTransaction().replace(R.id.main_frm,AlbumFragment()).commitAllowingStateLoss()
-//
-//        }
-        albumDatas.apply{
-            add(Album("Butter", "방탄소년단 (BTS)", R.drawable.img_album_exp))
+
+        // DB 인스턴스
+        db = FloDatabase.getInstance(requireContext())
+
+        // 어댑터/리사이클러 설정
+        albumRVAdapter = AlbumRVAdapter(albumDatas)
+        binding.homeTodayMusicAlbumRv.apply {
+            adapter = albumRVAdapter
+            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         }
-        val alubumRVAdapter = AlbumRVAdapter(albumDatas)
-        binding.homeTodayMusicAlbumRv.adapter = alubumRVAdapter
-        binding.homeTodayMusicAlbumRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
 
-
-        alubumRVAdapter.setMyItemClickListener(object : AlbumRVAdapter.MyItemClickListener{
+        // 앨범 클릭 → albumId 번들로 전달
+        albumRVAdapter.setMyItemClickListener(object : AlbumRVAdapter.MyItemClickListener {
             override fun onItemClick(album: Album) {
-                (context as MainActivity).supportFragmentManager.beginTransaction().replace(R.id.main_frm,AlbumFragment()).commitAllowingStateLoss()
+                val fragment = AlbumFragment().apply {
+                    arguments = Bundle().apply { putInt("albumId", album.id) }
+                }
+                (requireActivity() as MainActivity).supportFragmentManager
+                    .beginTransaction()
+                    .replace(R.id.main_frm, fragment)
+                    .addToBackStack(null)
+                    .commit()
             }
         })
 
-        val bannerAdapter = BannerVPAdapter(this)
-        bannerAdapter.addFragment(BannerFragment(R.drawable.img_home_viewpager_exp))
-        bannerAdapter.addFragment(BannerFragment(R.drawable.img_home_viewpager_exp2))
-        binding.homeBannerVp.adapter = bannerAdapter
-        binding.homeBannerVp.orientation = ViewPager2.ORIENTATION_HORIZONTAL
+        // 배너(그대로 유지)
+        val bannerAdapter = BannerVPAdapter(this).apply {
+            addFragment(BannerFragment(R.drawable.img_home_viewpager_exp))
+            addFragment(BannerFragment(R.drawable.img_home_viewpager_exp2))
+        }
+        binding.homeBannerVp.apply {
+            adapter = bannerAdapter
+            orientation = ViewPager2.ORIENTATION_HORIZONTAL
+        }
+
+        // 🔥 더미 add(...) 제거하고 DB에서 로드
+        loadAlbumsFromDb()
 
         return binding.root
+    }
+
+    private fun loadAlbumsFromDb() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            val albums = withContext(Dispatchers.IO) { db.albumDao().getAlbums() }
+            albumDatas.clear()
+            albumDatas.addAll(albums)
+            albumRVAdapter.notifyDataSetChanged()
+        }
     }
 }

@@ -10,14 +10,20 @@ import com.example.realflo.databinding.FragmentVideoBinding
 
 class VideoFragment : Fragment() {
 
-    lateinit var binding: FragmentVideoBinding
+    private lateinit var binding: FragmentVideoBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        binding = FragmentVideoBinding.inflate(inflater,container,false)
+    ): View {
+        binding = FragmentVideoBinding.inflate(inflater, container, false)
+
+        // AlbumVPAdapter에서 albumId 받기
+        val albumId = arguments?.getInt("albumId") ?: -1
+
+        // 디버그용
+        requireActivity().title = "영상 탭 (albumId=$albumId)"
 
         return binding.root
     }
