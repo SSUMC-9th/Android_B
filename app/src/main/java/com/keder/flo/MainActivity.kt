@@ -10,8 +10,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
-import com.google.firebase.Firebase
-import com.google.firebase.database.database
+// (Firebase 임포트 삭제)
 import com.google.gson.Gson
 import com.keder.flo.databinding.ActivityMainBinding
 
@@ -24,8 +23,7 @@ class MainActivity : AppCompatActivity(){
 
     private var songs = ArrayList<Song>()
     private var nowPos = 0
-    //private lateinit var songDB : SongDatabase
-    private val database = Firebase.database.reference
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,7 +33,10 @@ class MainActivity : AppCompatActivity(){
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        inputDummySongs()
+
+        inputDummySongs() // Room DB에 더미 데이터 삽입
+        inputDummyAlbums()
+
         binding.minibarPreviousIv.setOnClickListener { moveSong(-1) }
         binding.minibarNextIv.setOnClickListener { moveSong(+1) }
 
@@ -49,7 +50,9 @@ class MainActivity : AppCompatActivity(){
 
         binding.mainPlayerCl.setOnClickListener {
             val editor = getSharedPreferences("song", MODE_PRIVATE).edit()
-            editor.putString("songId", song.id)
+
+            // ⬇️ 3. Int ID를 SharedPreferences에 저장
+            editor.putInt("songId", song.id) // putString -> putInt
             editor.apply()
 
             val intent = Intent(this, SongActivity::class.java)
@@ -65,50 +68,24 @@ class MainActivity : AppCompatActivity(){
 
     override fun onStart() {
         super.onStart()
-//        val sharedPreferences = getSharedPreferences("song", MODE_PRIVATE)
-//        val songJson = sharedPreferences.getString("songData", null)
-//
-//        song = if(songJson == null){
-//            Song("라일락", "아이유(IU)", 0, 0,60, false, "music_lilac")
-//        }else{
-//            gson.fromJson(songJson, Song::class.java)
-//        }
-        //songDB = SongDatabase.getInstance(this)!!
+
+        // ⬇️ 4. SharedPreferences에서 Int ID 가져오기
         val spf = getSharedPreferences("song", MODE_PRIVATE)
-        //val songId = spf.getInt("songId", 0)
-        val songIdspf = spf.getString("songId", "")
-        val songId : String = songIdspf ?: ""
+        val songId = spf.getInt("songId", 0) // getString -> getInt
 
-        database.child("songs").get().addOnSuccessListener { dataSnapshot ->
-            songs.clear()
-            var currentSong : Song? = null
+        val songDB = SongDatabase.getInstance(this)!!
 
-            for(snapshot in dataSnapshot.children){
-                val song = snapshot.getValue(Song::class.java)
-                if(song != null){
-                    songs.add(song)
-                    if(song.id == songId){
-                        currentSong = song
-                        nowPos = songs.size -1
-                    }
-                }
-            }
-            if(currentSong == null && songs.isNotEmpty()){
-                currentSong = songs[0]
-                nowPos = 0
-            }
-            if(currentSong != null){
-                song = currentSong!!
-                Log.d("Song ID", song.id)
-                setMiniPlayer(this.song)
-                binding.minibarPreviousIv.isEnabled = true
-                binding.minibarNextIv.isEnabled = true
-            }
-        }.addOnFailureListener { Log.e("Firebase", "Failed to load song for miniplayer", it) }
-
-
+        song = if(songId == 0){
+            songDB.songDao().getSong(1)
+        }else{
+            songDB.songDao().getSong(songId)
+        }
+        Log.d("song ID", song.id.toString())
+        setMiniPlayer(song)
     }
-    private fun getPlayingSongPosition(songId : String) : Int{
+
+    // ⬇️ 7. Int ID를 받도록 수정
+    private fun getPlayingSongPosition(songId : Int) : Int{
         for(i in 0 until songs.size){
             if(songs[i].id == songId){
                 return i
@@ -117,6 +94,7 @@ class MainActivity : AppCompatActivity(){
         return 0
     }
 
+    // ⬇️ 8. SharedPreferences에 Int ID를 저장하도록 수정
     private fun moveSong(direct : Int){
         if (songs.isEmpty()) {
             Log.e("moveSong", "Songs list is empty, cannot move.")
@@ -136,7 +114,7 @@ class MainActivity : AppCompatActivity(){
         setMiniPlayer(song) // 미니 플레이어 UI 업데이트
 
         val editor = getSharedPreferences("song", MODE_PRIVATE).edit()
-        editor.putString("songId", song.id) // putInt -> putString
+        editor.putInt("songId", song.id) // putString -> putInt
         editor.apply()
     }
 
@@ -146,114 +124,77 @@ class MainActivity : AppCompatActivity(){
         binding.mainMiniplayerProgressSb.progress = (song.second*100000)/song.playTime
     }
 
+    // ⬇️ 9. Room DB에 insert하는 코드로 원복
     private fun inputDummySongs(){
-//        val songDB = SongDatabase.getInstance(this)!!
-//        val songs = songDB.songDao().getSongs()
+        val songDB = SongDatabase.getInstance(this)!!
+        val songs = songDB.songDao().getSongs()
 
-//        if(songs.isNotEmpty()) return
+        if(songs.isNotEmpty()) return
 
-        val songsRef = database.child("songs")
-        songsRef.get().addOnSuccessListener { dataSnapshot ->
-            if (dataSnapshot.childrenCount == 0L){
-                Log.d("Firebase", "Inserting dummy")
+        // (Firebase 코드 전체 삭제)
 
-                val dummySong1 = Song(
-                    "Lilac",
-                    "아이유 (IU)",
-                    0,
-                    200,
-                    false,
-                    "music_lilac",
-                    R.drawable.img_album_exp2,
-                    false,
-                )
+        Log.d("DB", "Inserting dummy songs...")
+        songDB.songDao().insert(
+            Song(
+                "Lilac",
+                "아이유 (IU)",
+                0,
+                200,
+                false,
+                "music_lilac",
+                R.drawable.img_album_exp2,
+                false
+            )
+        )
 
-                val newKey1 = songsRef.push().key
-                if(newKey1 != null){
-                    dummySong1.id = newKey1
-                    songsRef.child(newKey1).setValue(dummySong1)
-                }
-
-                val dummySong2 = Song(
-                    "Flu",
+        songDB.songDao().insert(
+            Song(
+                "Flu",
                 "아이유 (IU)",
                 0,
                 200,
                 false,
                 "music_flu",
                 R.drawable.img_album_exp2,
-                false,
-                )
+                false
+            )
+        )
 
-                val newKey2 = songsRef.push().key
-                if(newKey2 != null){
-                    dummySong1.id = newKey2
-                    songsRef.child(newKey2).setValue(dummySong2)
-                }
-
-                val dummySong3 = Song(
-                    "Butter",
+        songDB.songDao().insert(
+            Song(
+                "Butter",
                 "방탄소년단 (BTS)",
                 0,
                 190,
                 false,
                 "music_butter",
                 R.drawable.img_album_exp,
-                false,
-                )
+                false
+            )
+        )
 
-                val newKey3 = songsRef.push().key
-                if(newKey3 != null){
-                    dummySong1.id = newKey3
-                    songsRef.child(newKey3).setValue(dummySong3)
-                }
-            }else{
-                Log.d("Firebase", "Dummy data already exits")
-            }
-        }.addOnFailureListener { Log.e("Firebase", "Failed to check dummy datas", it) }
-//        songDB.songDao().insert(
-//            Song(
-//                "Lilac",
-//                "아이유 (IU)",
-//                0,
-//                200,
-//                false,
-//                "music_lilac",
-//                R.drawable.img_album_exp2,
-//                false,
-//            )
-//        )
-//
-//        songDB.songDao().insert(
-//            Song(
-//                "Flu",
-//                "아이유 (IU)",
-//                0,
-//                200,
-//                false,
-//                "music_flu",
-//                R.drawable.img_album_exp2,
-//                false,
-//            )
-//        )
-//
-//        songDB.songDao().insert(
-//            Song(
-//                "Butter",
-//                "방탄소년단 (BTS)",
-//                0,
-//                190,
-//                false,
-//                "music_butter",
-//                R.drawable.img_album_exp,
-//                false,
-//            )
-//        )
-//
-//        val _songs = songDB.songDao().getSongs()
-//        Log.d("DB data", _songs.toString())
-
+        val _songs = songDB.songDao().getSongs()
+        Log.d("DB data", _songs.toString())
     }
 
+    private fun inputDummyAlbums(){
 
+        val songDB = SongDatabase.getInstance(this)!!
+        val albums = songDB.albumDao().getAlbums()
+
+        if(albums.isNotEmpty()) return
+
+        songDB.albumDao().insert(
+            Album(0, "IU 5th Album 'LILAC'", "아이유(IU)", R.drawable.img_album_exp2)
+        )
+
+        songDB.albumDao().insert(
+            Album(1, "Butter", "방탄소년단(BTS)", R.drawable.img_album_exp)
+        )
+
+        songDB.albumDao().insert(
+            Album(2, "IU 5th Album 'LILAC'22", "아이유(IU)", R.drawable.img_album_exp2)
+        )
+
+    }
 }

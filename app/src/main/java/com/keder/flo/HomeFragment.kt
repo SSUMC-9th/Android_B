@@ -17,6 +17,8 @@ class HomeFragment : Fragment() {
     lateinit var binding: FragmentHomeBinding
     private var albumDatas = ArrayList<Album>()
 
+    private lateinit var songDB : SongDatabase
+
     private val backgroundHandler = Handler(Looper.getMainLooper())
     private lateinit var backgroundSlideRunnable: Runnable
     private val BACKGROUND_SLIDE_DELAY: Long = 3000 // 3초 간격
@@ -32,14 +34,8 @@ class HomeFragment : Fragment() {
     ): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
 
-        albumDatas.apply {
-            add(Album("Butter", "방탄소년단 (BTS)", R.drawable.img_album_exp))
-            add(Album("Lilac", "아이유 (IU)", R.drawable.img_album_exp2))
-            add(Album("Butter2", "방탄소년단 (BTS)", R.drawable.img_album_exp))
-            add(Album("Lilac2", "아이유 (IU)", R.drawable.img_album_exp2))
-            add(Album("Butter3", "방탄소년단 (BTS)", R.drawable.img_album_exp))
-            add(Album("Lilac3", "아이유 (IU)", R.drawable.img_album_exp2))
-        }
+        songDB = SongDatabase.getInstance(requireContext())!!
+        albumDatas.addAll(songDB.albumDao().getAlbums())
 
         val albumRVAdapter = AlbumRVAdapter(albumDatas)
         binding.homeTodayMusicAlbumRv.adapter = albumRVAdapter
