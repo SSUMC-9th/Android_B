@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.realflo.databinding.FragmentDetailBinding
 import com.example.realflo.databinding.FragmentSongBinding
 import data.local.FloDatabase
 import kotlinx.coroutines.Dispatchers
@@ -31,11 +30,13 @@ class SongFragment : Fragment() {
     ): View {
         binding = FragmentSongBinding.inflate(inflater, container, false)
         db = FloDatabase.getInstance(requireContext())
-
-        setupRecyclerView()
-        loadSongs() // 최초 로드
-
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupRecyclerView()
+        loadSongs()   // 최초 로드
     }
 
     override fun onResume() {
@@ -50,20 +51,25 @@ class SongFragment : Fragment() {
         // 곡 클릭 → SongActivity
         adapter.setOnItemClickListener { song ->
             val intent = Intent(requireContext(), SongActivity::class.java)
-            intent.putExtra("songId", song.id) // 인텐트 키 통일!
+            intent.putExtra("songId", song.id)
             startActivity(intent)
         }
 
-        // 하트 클릭 → DB 토글 + UI 업데이트
+        // 하트 클릭 → DB isLike 토글 + 리스트/아이콘 갱신
         adapter.setOnLikeClickListener { song, position ->
-            lifecycleScope.launch {
+            viewLifecycleOwner.lifecycleScope.launch {
                 val newLike = !song.isLike
+
+                // DB 업데이트
                 withContext(Dispatchers.IO) {
                     db.songDao().updateLike(song.id, newLike)
                 }
+
                 // 로컬 리스트 갱신
-                songs[position] = song.copy(isLike = newLike)
-                adapter.notifyItemChanged(position)
+                if (position in songs.indices) {
+                    songs[position] = song.copy(isLike = newLike)
+                    adapter.notifyItemChanged(position)
+                }
             }
         }
 
@@ -83,8 +89,5 @@ class SongFragment : Fragment() {
         }
     }
 }
-
-
-
 
 

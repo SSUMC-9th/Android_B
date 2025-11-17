@@ -40,16 +40,13 @@ class DetailFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             val album = withContext(Dispatchers.IO) {
-                db.albumDao().getAlbum(albumId)
+                db.albumDao().getAlbumById(albumId)
             }
 
             album?.let {
                 binding.detailTitleTv.text = it.title
                 binding.detailSingerTv.text = it.singer
-                // 설명은 별도 필드가 없으니 임시로 구성
                 binding.detailDescTv.text = "이 앨범은 ${it.singer}의 \"${it.title}\" 입니다."
-                // 만약 fragment_detail.xml에 cover 이미지뷰가 있다면 주석 해제
-                // it.coverImg?.let { resId -> binding.detailCoverIv.setImageResource(resId) }
             }
         }
     }

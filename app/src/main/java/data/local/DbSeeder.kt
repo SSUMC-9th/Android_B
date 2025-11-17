@@ -13,27 +13,25 @@ object DbSeeder {
         val songDao = db.songDao()
 
         // Album 테이블에 데이터가 이미 있는지 확인
-        if (albumDao.getAlbums().isNotEmpty()) {
+        if (albumDao.getAllAlbums().isNotEmpty()) {
             return@withContext
         }
 
         // 앨범 더미
-        albumDao.insertAll(
+        albumDao.insertAlbums(
             listOf(
                 Album(
                     title = "NewJeans",
-                    singer = "NewJeans",
-                    description = "NewJeans의 다양한 음악이 담긴 EP"
+                    singer = "NewJeans"
                 ),
                 Album(
                     title = "IU Special",
-                    singer = "IU",
-                    description = "아이유 스페셜 앨범 모음"
+                    singer = "IU"
                 )
             )
         )
 
-        val albums = albumDao.getAlbums()
+        val albums = albumDao.getAllAlbums()
         val newJeansId = albums.first { it.title == "NewJeans" }.id
         val iuId = albums.first { it.title == "IU Special" }.id
 
@@ -44,11 +42,12 @@ object DbSeeder {
                     title = "Hype Boy",
                     singer = "NewJeans",
                     playTime = 210,
-                    albumIdx = newJeansId!!,
+                    albumIdx = newJeansId,
                     music = "music_hypeboy"
                 ),
-                Song(title = "Ditto",    singer = "NewJeans", playTime = 190, albumIdx = newJeansId!!),
-                Song(title = "LILAC",    singer = "IU",       playTime = 230, albumIdx = iuId!!, music = "music_lilac")
+
+                Song(title = "Ditto",    singer = "NewJeans", playTime = 190, albumIdx = newJeansId),
+                Song(title = "LILAC",    singer = "IU",       playTime = 230, albumIdx = iuId, music = "music_lilac")
             )
         )
     }
