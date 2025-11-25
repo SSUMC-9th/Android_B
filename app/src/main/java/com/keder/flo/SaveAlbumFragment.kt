@@ -1,23 +1,22 @@
+package com.keder.flo
+
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.firebase.Firebase
-import com.google.firebase.database.database
 import com.keder.flo.R
 import com.keder.flo.SaveAlbumRVAdapter
+import com.keder.flo.SaveSongRVAdapter
 import com.keder.flo.Song
 import com.keder.flo.databinding.FragmentSaveAlbumBinding
 
 class SaveAlbumFragment : Fragment() {
-    lateinit var binding : FragmentSaveAlbumBinding
-    //private var songData = ArrayList<Song>()
-    private val database = Firebase.database.reference
-    private val savedSongList = ArrayList<Song>()
-    private lateinit var albumRVAdapter: SaveAlbumRVAdapter
+    lateinit var binding: FragmentSaveAlbumBinding
+    lateinit var albumDB: SongDatabase
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -26,41 +25,40 @@ class SaveAlbumFragment : Fragment() {
     ): View? {
         binding = FragmentSaveAlbumBinding.inflate(inflater, container, false)
 
-
-        val albumRVAdapter = SaveAlbumRVAdapter(savedSongList, true)
-        binding.lockerSavedSongRecyclerView.adapter = albumRVAdapter
-        binding.lockerSavedSongRecyclerView.layoutManager = LinearLayoutManager(context,
-            LinearLayoutManager.VERTICAL, false)
-        albumRVAdapter.setMyItemClickListener(object : SaveAlbumRVAdapter.MyItemClickListener{
-            override fun onRemoveSong(songId: String) {
-                database.child("songs").child(songId).child("isLike").setValue(false)
-                    .addOnSuccessListener {
-                        loadSavedSongsFromFirebase()
-                        Log.d("Firebase", "$songId 'like' removed")
-                    }
-            }
-        })
+        albumDB = SongDatabase.getInstance(requireContext())!!
 
         return binding.root
     }
 
-    override fun onResume() {
-        super.onResume()
-        loadSavedSongsFromFirebase()
+    override fun onStart() {
+        super.onStart()
+        initRecyclerview()
     }
 
-    private fun loadSavedSongsFromFirebase(){
-        database.child("songs").get().addOnSuccessListener { dataSnapshot ->
-            savedSongList.clear()
-            for(snapshot in dataSnapshot.children){
-                val song = snapshot.getValue(Song::class.java)
-                if(song != null && song.isLike){
-                    savedSongList.add(song)
-                }
+    private fun initRecyclerview(){
+        binding.lockerSavedSongRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+
+        val albumRVAdapter = AlbumLockerRVAdapter()
+        //리스너 객체 생성 및 전달
+
+        albumRVAdapter.setMyItemClickListener(object : AlbumLockerRVAdapter.MyItemClickListener{
+            override fun onRemoveSong(songId: Int) {
+                albumDB.albumDao().getLikedAlbums(getJwt())
             }
-            albumRVAdapter.notifyDataSetChanged()
-            Log.d("Firebase", "Loaded ${savedSongList.size} liked songs")
-        }.addOnFailureListener { Log.e("Firebase", "Failed to load liked songs", it) }
+        })
+
+        binding.lockerSavedSongRecyclerView.adapter = albumRVAdapter
+
+        albumRVAdapter.addAlbums(albumDB.albumDao().getLikedAlbums(getJwt()) as ArrayList)
     }
+
+    private fun getJwt() : Int {
+        val spf = activity?.getSharedPreferences("auth" , AppCompatActivity.MODE_PRIVATE)
+        val jwt = spf!!.getInt("jwt", 0)
+        Log.d("MAIN_ACT/GET_JWT", "jwt_token: $jwt")
+
+        return jwt
+    }
+
 
 }
