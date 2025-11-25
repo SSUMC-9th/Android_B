@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.umctest1.databinding.FragmentHomeBinding
+import com.google.android.material.tabs.TabLayoutMediator
 
 class HomeFragment : Fragment() {
 
@@ -27,11 +28,14 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // viewModel 테스트
-        binding.homeTv.setOnClickListener{
-            testViewModel.setText("hello aaa")
+        _binding = FragmentHomeBinding.bind(view)
 
-            findNavController().navigate(R.id.albumFragment)
-        }
+        val pagerAdapter = HomeVPAdapter(this)
+        binding.homeBannerVp.adapter = pagerAdapter
+
+        TabLayoutMediator(binding.homeBannerTab, binding.homeBannerVp) {tab, position ->
+            tab.text = " "
+        }.attach()
+
     }
 }
