@@ -17,7 +17,7 @@ class SongRVAdapter(
         onItemClick = listener
     }
 
-    /** 하트만 클릭 (원하면 다음 턴에 DB 토글 연결) */
+    /** 하트 클릭 콜백: (현재 Song, position) */
     private var onLikeClick: ((Song, Int) -> Unit)? = null
     fun setOnLikeClickListener(listener: (Song, Int) -> Unit) {
         onLikeClick = listener
@@ -46,12 +46,20 @@ class SongRVAdapter(
         val song = items[position]
         holder.bind(song)
 
-        // 아이템 전체 클릭
-        holder.itemView.setOnClickListener { onItemClick?.invoke(song) }
+        // 곡 전체 클릭
+        holder.itemView.setOnClickListener {
+            val pos = holder.adapterPosition
+            if (pos != RecyclerView.NO_POSITION) {
+                onItemClick?.invoke(items[pos])
+            }
+        }
 
-        // 하트만 클릭 (다음 턴에 DB 토글 연결 예정)
+        // 하트 클릭 → Fragment 에게 Song + position 전달
         holder.likeIv.setOnClickListener {
-            onLikeClick?.invoke(song, position)
+            val pos = holder.adapterPosition
+            if (pos != RecyclerView.NO_POSITION) {
+                onLikeClick?.invoke(items[pos], pos)
+            }
         }
     }
 
@@ -67,11 +75,10 @@ class SongRVAdapter(
             singerTv.text = song.singer
 
             // isLike 상태에 맞춰 하트 표시
-            if (song.isLike) {
-                likeIv.setImageResource(R.drawable.ic_my_like_on)
-            } else {
-                likeIv.setImageResource(R.drawable.ic_my_like_off)
-            }
+            likeIv.setImageResource(
+                if (song.isLike) R.drawable.ic_my_like_on
+                else R.drawable.ic_my_like_off
+            )
         }
     }
 }

@@ -32,31 +32,56 @@ class LockerFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         setupRecyclerView()
+        setupSavedAlbumButton()
         loadLikedSongs()
     }
 
     override fun onResume() {
         super.onResume()
-        // SongActivity에서 하트 토글하고 돌아왔을 때 갱신
         loadLikedSongs()
     }
 
-    private fun setupRecyclerView() {
-        adapter = LockerAdapter { song ->
-            val intent = Intent(requireContext(), SongActivity::class.java)
-            intent.putExtra("songId", song.id)
-            startActivity(intent)
+    private fun setupSavedAlbumButton() {
+        // 저장앨범 버튼 클릭 시 → 저장앨범 목록 Fragment 로 이동
+        binding.lockerSavedAlbumBtn.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_frm, SavedAlbumFragment())
+                .addToBackStack(null)
+                .commit()
         }
+    }
+
+    private fun setupRecyclerView() {
+        adapter = LockerAdapter(
+            onSongClicked = { song ->
+                // 곡 클릭하면 SongActivity 이동
+                val intent = Intent(requireContext(), SongActivity::class.java)
+                intent.putExtra("songId", song.id)
+                startActivity(intent)
+            },
+
+            onLikeClicked = { song ->
+                // 좋아요 해제
+                viewLifecycleOwner.lifecycleScope.launch {
+                    withContext(Dispatchers.IO) {
+                        db.songDao().updateLike(song.id, false)
+                    }
+                    loadLikedSongs()
+                }
+            }
+        )
 
         binding.lockerRecyclerview.adapter = adapter
-        binding.lockerRecyclerview.layoutManager = LinearLayoutManager(requireContext())
+        binding.lockerRecyclerview.layoutManager =
+            LinearLayoutManager(requireContext())
     }
 
     private fun loadLikedSongs() {
         viewLifecycleOwner.lifecycleScope.launch {
             val likedSongs = withContext(Dispatchers.IO) {
-                db.songDao().getLikedSongs()   // 좋아요만 조회
+                db.songDao().getLikedSongs()
             }
 
             adapter.submitList(likedSongs)

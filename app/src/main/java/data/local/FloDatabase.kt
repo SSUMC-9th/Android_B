@@ -6,16 +6,20 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.realflo.Album
 import com.example.realflo.Song
+import com.example.realflo.User
+import data.local.UserDao
 
 @Database(
-    entities = [Song::class, Album::class],
-    version = 3,
+    entities = [Song::class, Album::class, User::class],
+    version = 4,
     exportSchema = false
 )
 abstract class FloDatabase : RoomDatabase() {
 
     abstract fun songDao(): SongDao
     abstract fun albumDao(): AlbumDao
+
+    abstract fun userDao(): UserDao
 
     companion object {
         @Volatile private var INSTANCE: FloDatabase? = null

@@ -53,17 +53,16 @@ class HomeFragment : Fragment() {
             }
         })
 
-        // 배너(그대로 유지)
+        // 배너
         val bannerAdapter = BannerVPAdapter(this).apply {
-            addFragment(BannerFragment(R.drawable.img_home_viewpager_exp))
-            addFragment(BannerFragment(R.drawable.img_home_viewpager_exp2))
+            addFragment(BannerFragment.newInstance(R.drawable.img_home_viewpager_exp))
+            addFragment(BannerFragment.newInstance(R.drawable.img_home_viewpager_exp2))
         }
         binding.homeBannerVp.apply {
             adapter = bannerAdapter
             orientation = ViewPager2.ORIENTATION_HORIZONTAL
         }
 
-        // 🔥 더미 add(...) 제거하고 DB에서 로드
         loadAlbumsFromDb()
 
         return binding.root
@@ -71,7 +70,7 @@ class HomeFragment : Fragment() {
 
     private fun loadAlbumsFromDb() {
         viewLifecycleOwner.lifecycleScope.launch {
-            val albums = withContext(Dispatchers.IO) { db.albumDao().getAlbums() }
+            val albums = withContext(Dispatchers.IO) { db.albumDao().getAllAlbums() }
             albumDatas.clear()
             albumDatas.addAll(albums)
             albumRVAdapter.notifyDataSetChanged()
