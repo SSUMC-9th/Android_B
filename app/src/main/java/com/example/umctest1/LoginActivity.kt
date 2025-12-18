@@ -122,6 +122,7 @@ class LoginActivity : AppCompatActivity(), LoginView {
             UserApiClient.instance.loginWithKakaoAccount(this, callback = callback)
         }
 
+        // 로그인 무한 반복
 //        UserApiClient.instance.loginWithKakaoAccount(
 //            context = this,
 //            prompts = listOf(Prompt.LOGIN),
