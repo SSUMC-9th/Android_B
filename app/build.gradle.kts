@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -17,6 +19,18 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // 1. local.properties 파일 읽어오기
+        val properties = Properties()
+        val propertiesFile = project.rootProject.file("local.properties")
+        if (propertiesFile.exists()) {
+            properties.load(propertiesFile.inputStream())
+        }
+        val kakaoKey = properties.getProperty("kakao_native_key") ?: ""
+        // 2. 소스 코드에서 BuildConfig.KAKAO_KEY로 쓸 수 있게 설정
+        buildConfigField("String", "KAKAO_KEY", "\"$kakaoKey\"")
+        // 3. 매니페스트에서 ${kakaoAppKey}로 쓸 수 있게 설정
+        manifestPlaceholders["kakaoAppKey"] = kakaoKey
     }
 
     buildTypes {
@@ -37,6 +51,7 @@ android {
     }
     buildFeatures{
         viewBinding = true
+        buildConfig = true
     }
 }
 
@@ -69,4 +84,6 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
+
+    implementation("com.kakao.sdk:v2-all:2.20.1")
 }
