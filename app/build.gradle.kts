@@ -44,9 +44,6 @@ dependencies {
     implementation(platform("androidx.compose:compose-bom:2024.05.00"))
     implementation("me.relex:circleindicator:2.1.6")
 
-    // Retrofit
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
 // OkHttp (Retrofit 내부 HTTP 통신)
     implementation("com.squareup.okhttp3:logging-interceptor:4.10.0")
@@ -64,7 +61,9 @@ dependencies {
 
     // Glide (★★ 빠져 있어서 오류 발생)
     implementation("com.github.bumptech.glide:glide:4.16.0")
-    kapt("com.github.bumptech.glide:compiler:4.16.0")
+    implementation("com.github.bumptech.glide:compiler:4.16.0")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
     // ✅ 기존 라이브러리들
     implementation("androidx.core:core-splashscreen:1.0.1")
@@ -76,9 +75,9 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.8.0") // compose와 호환되는 Activity
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     val roomVersion = "2.6.1"
-    implementation("androidx.room:room-runtime:$roomVersion")
+    //implementation("androidx.room:room-runtime:$roomVersion")
     implementation("androidx.room:room-ktx:$roomVersion")
-    kapt("androidx.room:room-compiler:$roomVersion")
+    implementation("androidx.room:room-compiler:$roomVersion")
     // 테스트
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
